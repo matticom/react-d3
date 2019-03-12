@@ -2,28 +2,31 @@ import React, { Component } from 'react';
 import * as d3 from "d3";
 import Datamap from "datamaps"
 
-// http://techslides.com/list-of-countries-and-capitals
-let cities = require('./data/country-capitals.json');
-
 class BarChart extends Component {
-    state = {  
-        h: 300,
-        w: 700
+    
+    state = {
+        cities: []
     }
 
+    constructor() {
+        super();
+        // http://techslides.com/list-of-countries-and-capitals
+        this.state.cities = require('./data/country-capitals.json');
+    }
+    
     componentDidMount() {
         //this.drawChart(); 
         this.drawWorld(); 
-        console.log(cities);
+        //console.log(this.state.cities);
     }
 
     drawWorld() {
         
-        const countries = ['US', 'GER', 'GB', 'VN', 'NG', 'NZ', 'UY'];
+        const countries = ['US', 'DE', 'GB', 'VN', 'NG', 'NZ', 'UY'];
 
         const bubbleSizes = {
             'US'    :   10,
-            'GER'   :   8,
+            'DE'   :   8,
             'GB'    :   11,
             'VN'    :   4,
             'NG'    :   25,
@@ -53,30 +56,25 @@ class BarChart extends Component {
             },
             setProjection: function (element) {
                 var projection = d3.geoMercator()
-                    .translate([400, 350]) // always in [East Latitude, North Longitude]
-                    .scale(100);
+                    .translate([600, 560]) // always in [East Latitude, North Longitude]
+                    .scale(190);
                 var path = d3.geoPath().projection(projection);
                 return { path, projection };
             },
             fills
         });
 
-        
-
-        
-
-        console.log(fills);
-        cities.forEach(city => {
-            city.name = city.CapitalName;
+        const processingCities = [...this.state.cities];
+        processingCities.forEach(city => {        
             city.radius = bubbleSizes.hasOwnProperty(city.CountryCode) ? bubbleSizes[city.CountryCode] : 1;
             city.yeild = 100;
             city.latitude = city.CapitalLatitude;
             city.longitude = city.CapitalLongitude;
             city.fillKey = (city.radius > 1) ? city.CountryCode : null;
+            city.name = city.CapitalName + " Size: " + city.radius;
         });
-        map.bubbles(cities);
-
-        
+        this.setState({cities: processingCities});
+        map.bubbles(this.state.cities);        
     }
 
     getColor(radiusSize) {
