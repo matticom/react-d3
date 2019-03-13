@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import * as d3 from "d3";
 import Datamap from "datamaps"
+import ResponseParser from "./ResponseParser"
 
 class BarChart extends Component {
     
@@ -12,6 +13,9 @@ class BarChart extends Component {
         super();
         // http://techslides.com/list-of-countries-and-capitals
         this.state.cities = require('./data/country-capitals.json');
+        this.state.testData = require('./data/test.json');
+        this.state.playouts = ResponseParser.parsePlayouts(this.state.testData);
+        this.state.ingests = ResponseParser.parseIngests(this.state.testData);
     }
     
     componentDidMount() {
