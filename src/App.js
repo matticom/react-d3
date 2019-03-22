@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import './App.css';
-import BarChart from './BarChart';
+
+import WorldMap from './WorldMap';
 
 class App extends Component {
 
@@ -14,10 +15,13 @@ class App extends Component {
   render() {
     return (
       <div className="App">
-        <BarChart data={this.state.data} width={this.state.width} height={this.state.height} id={this.state.id}></BarChart>
+        <WorldMap></WorldMap>
+        
       </div>
     );
   }
 }
+
+// <BarChart data={this.state.data} width={this.state.width} height={this.state.height} id={this.state.id}></BarChart>
 
 export default App;
