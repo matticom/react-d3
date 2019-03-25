@@ -49,6 +49,38 @@
                                 }
                             ]
                         }
+                    },
+                    {
+                        "key": "US",
+                        "doc_count": 34,
+                        "cities": {
+                            "doc_count_error_upper_bound": 0,
+                            "sum_other_doc_count": 0,
+                            "buckets": [
+                                {
+                                    "key": "N/A",
+                                    "doc_count": 46
+                                },
+                                {
+                                    "key": "Selb",
+                                    "doc_count": 18
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "key": "SA",
+                        "doc_count": 12,
+                        "cities": {
+                            "doc_count_error_upper_bound": 0,
+                            "sum_other_doc_count": 0,
+                            "buckets": [
+                                {
+                                    "key": "Doetinchem",
+                                    "doc_count": 3
+                                }
+                            ]
+                        }
                     }
                 ]
             }

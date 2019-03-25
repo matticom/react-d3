@@ -154,9 +154,9 @@ class WorldMap extends Component {
         this.setState({deselected: false, previousCircle: undefined});
     }
 
-    handleResorting = (idx) => {  
-        console.log("handle resorting",this.state.countriesWithKibanaData)
+    handleResorting = (idx) => {      
         const countriesWithKibana = [...this.state.countriesWithKibanaData];
+        this.setState({countriesWithKibanaData: undefined});
         const elementToBeOnTop = countriesWithKibana.splice(idx, 1)[0];
         countriesWithKibana.push(elementToBeOnTop);
         this.setState({countriesWithKibanaData: countriesWithKibana, resorted: true});
@@ -196,7 +196,7 @@ class WorldMap extends Component {
                         {this.state.countriesWithKibanaData.map(
                             (country, i) => (
                                 <DataCircle
-                                    key={`dataCircle-${i}`}
+                                    key={`${this.getCountryDescription(country.id).name}`}
                                     previousCircle={this.state.previousCircle}
                                     position={this.getCountryCenter(country)}
                                     description={this.getCountryDescription(country.id)}

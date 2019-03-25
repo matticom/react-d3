@@ -37,10 +37,7 @@ code {
   border: 1px solid green;
 }
 
-.infoText {
-  fill: blue !important;
-  z-index: 10000;
-}
+
 
 .invisible {
   visibility: hidden;

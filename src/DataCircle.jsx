@@ -8,65 +8,68 @@ class DataCircle extends Component {
             margin: 11,
             fontSize: 0
          }
-    }
-    
+    }       
    
     componentDidUpdate() {
         if (this.props.deselected) {
             if (this.props.previousCircle.circle === this.refs.circleRef) {
-                const oldSmallCircleSetting = this.props.previousCircle;
-                this.setCircleSettings(oldSmallCircleSetting);
-                this.hideInfo(oldSmallCircleSetting);
+                this.restoreSmallCircleSettings();
                 this.props.onHasBeenDeselected();
             }
         }
         
-        if (this.props.resorted) {
-            console.log("cdu")
+        if (this.props.resorted) {           
             if(this.props.idx === this.props.lastElementIdx){
-                //this.refs.circleRef.dispatchEvent(new MouseEvent('click'));
-                this.props.onHasBeenResorted();
-                console.log("clicked")
+                this.refs.circleRef.className.baseVal = "circle";
+                setTimeout(() =>
+                    this.refs.circleRef.dispatchEvent(
+                        new MouseEvent('click', { view: window, bubbles: true, cancelable: false })
+                    ), 1);               
+                this.props.onHasBeenResorted();                
             }
         }
+        
     }    
 
-    handleCircleClick = (e) => {
-        console.log("new clickhandler")
+    handleCircleClick = (e) => {        
         // make sure that the clicked circle is not covered by other circles
         if (this.props.idx !== this.props.lastElementIdx){
-            this.props.onResortElements(this.props.idx);
-            console.log("resorting")
+            if (this.props.previousCircle) {
+                this.restoreSmallCircleSettings();            
+            }
+            this.props.onSetPreviousCircle(undefined);
+            this.props.onResortElements(this.props.idx); 
             return;
         }            
         
         const circle = e.currentTarget;
-        
+
         // clicked on already maximized circle
-        if (this.props.previousCircle && this.props.previousCircle.circle === circle) return;
+        if (this.props.previousCircle && this.props.previousCircle.circle === circle) return; 
         
         // backup for last maximized circle is available
         if (this.props.previousCircle) {
-            const oldSmallCircleSetting = this.props.previousCircle;
-            this.setCircleSettings(oldSmallCircleSetting);
-            this.hideInfo(oldSmallCircleSetting);            
+            this.restoreSmallCircleSettings();           
         }
 
         // backup minimized circle settings
-        const currentSmallCircleSettings = this.saveMinimizedCircleSettings(circle); 
-        this.props.onSetPreviousCircle({
-            circle: currentSmallCircleSettings.circle,
-            infoText: currentSmallCircleSettings.infoText,
-            properties: currentSmallCircleSettings.properties
-        }, this.props);
+        const currentSmallCircleSettings = this.saveMinimizedCircleSettings(circle, this.props.idx); 
+        this.props.onSetPreviousCircle({ ...currentSmallCircleSettings });
 
         // set properties for maximized circle
         this.setCircleSettings(this.getMaximizedCircleSettings(circle));
         this.showInfo();
+        this.props.onResortElements(this.props.idx);
     }
 
-    setCircleSettings(circleProps) {
-        const circle = circleProps.circle;
+    restoreSmallCircleSettings() {
+        const oldSmallCircleSetting = this.props.previousCircle;
+        this.setCircleSettings(oldSmallCircleSetting);
+        this.hideInfo(oldSmallCircleSetting);  
+    }
+
+    setCircleSettings(circleProps) {        
+        const circle = circleProps.circle;        
         const properties = circleProps.properties;
         circle.setAttribute("transform", properties.transform)
 
@@ -78,7 +81,7 @@ class DataCircle extends Component {
     setInstantProperties(circleProps) {
         const circle = circleProps.circle;
         const properties = circleProps.properties;
-        const svgParent = properties.svgParent;
+        const svgParent = circleProps.svgParent;
 
         svgParent.setAttribute("x", properties.svgX);
         svgParent.setAttribute("y", properties.svgY);
@@ -90,14 +93,15 @@ class DataCircle extends Component {
 
         circle.style.stroke = properties.stroke;
         circle.style.opacity = properties.opacity; 
-    }
+    }   
 
-    saveMinimizedCircleSettings(circle) {
+    saveMinimizedCircleSettings(circle, idx) {
         return {
+            idx,
             circle,
             infoText: this.refs.svgRef,
-            properties: {
-                svgParent: circle.parentElement,
+            svgParent: circle.parentElement,
+            properties: {                
                 svgX: circle.parentElement.x.baseVal.value,
                 svgY: circle.parentElement.y.baseVal.value,
                 svgSideLength: this.props.radius * 2,
@@ -117,8 +121,8 @@ class DataCircle extends Component {
         const newDoubleRadiusWithStroke = this.props.radius * 2 + this.props.strokeWidth;
         return {
             circle,
+            svgParent: circle.parentElement,
             properties: {
-                svgParent: circle.parentElement,
                 svgX: circle.parentElement.x.baseVal.value - radiusWithStroke,
                 svgY: circle.parentElement.y.baseVal.value - radiusWithStroke,
                 svgSideLength: newDoubleRadiusWithStroke * 2,
@@ -162,7 +166,8 @@ class DataCircle extends Component {
         const sideLength = radiusWithStroke * 2;
         const maxRadiusWithStroke = radius * 2 + strokeWidth + 5;
         
-        console.log("data", data);
+        console.log("props", this.props);
+        console.log("props", this.props);
         console.log("desc", description);
         return (
             <React.Fragment>
