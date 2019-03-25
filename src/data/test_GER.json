@@ -1,0 +1,120 @@
+{
+    "playout": {
+        "took": 192,
+        "timed_out": false,
+        "_shards": {
+            "total": 546,
+            "successful": 546,
+            "skipped": 462,
+            "failed": 0
+        },
+        "hits": {
+            "total": 67,
+            "max_score": 0,
+            "hits": []
+        },
+        "aggregations": {
+            "countries": {
+                "doc_count_error_upper_bound": 0,
+                "sum_other_doc_count": 0,
+                "buckets": [
+                    {
+                        "key": "DE",
+                        "doc_count": 64,
+                        "cities": {
+                            "doc_count_error_upper_bound": 0,
+                            "sum_other_doc_count": 0,
+                            "buckets": [
+                                {
+                                    "key": "N/A",
+                                    "doc_count": 46
+                                },
+                                {
+                                    "key": "Selb",
+                                    "doc_count": 18
+                                }
+                            ]
+                        }
+                    }
+                ]
+            }
+        }
+    },
+    "ingest": {
+        "took": 114,
+        "timed_out": false,
+        "_shards": {
+            "total": 546,
+            "successful": 546,
+            "skipped": 462,
+            "failed": 0
+        },
+        "hits": {
+            "total": 385,
+            "max_score": 0,
+            "hits": []
+        },
+        "aggregations": {
+            "countries": {
+                "doc_count_error_upper_bound": 0,
+                "sum_other_doc_count": 0,
+                "buckets": [
+                    {
+                        "key": "DE",
+                        "doc_count": 261,
+                        "cities": {
+                            "doc_count_error_upper_bound": 0,
+                            "sum_other_doc_count": 0,
+                            "buckets": [
+                                {
+                                    "key": "Selb",
+                                    "doc_count": 179
+                                },
+                                {
+                                    "key": "N/A",
+                                    "doc_count": 80
+                                },
+                                {
+                                    "key": "Frankfurt am Main",
+                                    "doc_count": 2
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "key": "NL",
+                        "doc_count": 117,
+                        "cities": {
+                            "doc_count_error_upper_bound": 0,
+                            "sum_other_doc_count": 0,
+                            "buckets": [
+                                {
+                                    "key": "Amsterdam",
+                                    "doc_count": 99
+                                },
+                                {
+                                    "key": "N/A",
+                                    "doc_count": 18
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "key": "US",
+                        "doc_count": 7,
+                        "cities": {
+                            "doc_count_error_upper_bound": 0,
+                            "sum_other_doc_count": 0,
+                            "buckets": [
+                                {
+                                    "key": "Miami",
+                                    "doc_count": 7
+                                }
+                            ]
+                        }
+                    }
+                ]
+            }
+        }
+    }
+}

@@ -3,6 +3,7 @@ import * as d3 from "d3";
 import ResponseParser from "./ResponseParser"
 import * as topojson from "topojson-client";
 import DataCircle from './DataCircle';
+import Country from './Country';
 
 // https://github.com/lukes/ISO-3166-Countries-with-Regional-Codes/blob/master/slim-2/slim-2.json
 
@@ -50,6 +51,13 @@ class WorldMap extends Component {
             { name: "Paris", coordinates: [2.3522,48.8566], population: 10858000 },
             { name: "Lima", coordinates: [-77.0428,-12.0464], population: 10750000 },
           ];
+        
+        this.state.mapWidth = 1200;
+        this.state.mapHeight = this.state.mapWidth * 0.665;
+        this.state.radius = 3 + this.state.mapWidth / 300;
+        this.state.strokeWidth = 0.5 + this.state.mapWidth / 1200;
+
+        //this.state.testData = require('./data/test_GER.json');
         this.state.testData = require('./data/test.json');
         this.state.rawWorldData = require('./data/110m.json');
         this.state.countryCodes = require('./data/slim-2.json');
@@ -59,13 +67,11 @@ class WorldMap extends Component {
         this.state.heatestValue = this.findMaxHeatingValue(this.state.playouts);
         this.state.countriesWithKibanaData = this.filterCountriesWithKibanaData(this.state.playouts);
         this.state.deselected = false;
+        this.state.resorted = false;
+        this.state.projection = this.projection();
         console.log("heatest value", this.state.heatestValue);
     }
     
-    componentDidMount() {
-     
-    }
-
     componentDidUpdate(prevProps, prevState) {
         // this.state.worldData.forEach((d, i) => {
         //     console.log("d:", d);
@@ -75,27 +81,10 @@ class WorldMap extends Component {
 
     projection() {
         return d3.geoMercator()
-        .translate([1200 / 2, 800 / 2 + 160]) // always in [East Latitude, North Longitude]
-        .scale(190);
+        .translate([this.state.mapWidth / 2, this.state.mapHeight / 1.42])
+        .scale(this.state.mapWidth / 6.3);
     }
    
-    handleSetPreviousCircle = (previousCircle) => {
-        this.setState({previousCircle});
-    }
-
-    handleCountryClick = (countryIndex, name) => {
-        console.log("Clicked on a country: ", this.state.worldData[countryIndex])
-        console.log("Clicked on a country short name: ", name)
-    }    
-    
-    getPath (d, idx) {
-        const path = d3.geoPath();
-        // console.log("bounds", path.bounds(d));
-        path.projection(this.projection()); 
-        // console.log("index", this.state.worldData[idx]);        
-        return path(d);        
-    }
-
     getCountryCenter(d) {  
         const path = d3.geoPath();
         path.projection(this.projection());   
@@ -108,31 +97,12 @@ class WorldMap extends Component {
     
     getCountryDescription(cc) {
         const country = this.state.countryCodes.find(country => country['country-code'] === cc);
-        //console.log("cc", country);
         return (country) ? country : { name: 'unknown', 'alpha-2': '-', 'country-code': cc};     
     }
 
     getKibanaDataWithAlphaCode(alphaCode) {
         return this.state.playouts.find(el => el.country === alphaCode);
-    }
-
-
-
-    getPathTag(d, i) {
-        const countryDesc = this.getCountryDescription(d.id);
-        return (
-            <path
-                key={`path-${i}`}
-                d={this.getPath(d, i)}
-                className={`country ${countryDesc['alpha-2']}`}
-                fill={'rgba(38,50,56,0.5)'}
-                stroke="#FFFFFF"
-                strokeWidth={0.5}
-                countrycode={countryDesc['country-code']}
-                onClick={() => this.handleCountryClick(i, countryDesc['alpha-2'])}
-            />
-        );
-    }
+    }    
 
     findMaxHeatingValue(res) {
         return Math.max.apply(Math, res.map(country => country.count));
@@ -142,6 +112,18 @@ class WorldMap extends Component {
         const value = input * 1.0 / this.state.heatestValue;
         const h = (1 - value) * 60;      
         return { h: Math.round(h * 100) / 100, s: 100, l: 35 }
+    }
+
+    filterCountriesWithKibanaData(data) {
+        const countriesWithData = [];
+        const alphaCodes = this.getCountryAlphaCodesFromKibanaData(data);
+        const numericCodes = this.convertAlphaCodesToNumericCodes(alphaCodes);
+        numericCodes.forEach(code => {
+            const country = {...this.state.worldData.find(d => d.id === code.num)};
+            country.alpha = code.alpha;
+            countriesWithData.push(country);
+        });
+        return countriesWithData;
     }
 
     getCountryAlphaCodesFromKibanaData(data) {
@@ -157,76 +139,86 @@ class WorldMap extends Component {
             numericCodes.push({num: countryObj['country-code'], alpha: ac});
         });
         return numericCodes;
-    }
+    }        
 
-    filterCountriesWithKibanaData(data) {
-        const countriesWithData = [];
-        const alphaCodes = this.getCountryAlphaCodesFromKibanaData(data);
-        const numericCodes = this.convertAlphaCodesToNumericCodes(alphaCodes);
-        numericCodes.forEach(code => {
-            const country = {...this.state.worldData.find(d => d.id === code.num)};
-            country.alpha = code.alpha;
-            countriesWithData.push(country);
-        });
-        return countriesWithData;
-    }
-
-
-    getFillHslColor(countryDesc) {
-        const shortname = countryDesc['alpha-2'];
-
-        if (this.state.playouts.findIndex(el => el.country === shortname) === -1) 
-            return 'rgba(38,50,56,0.5)';
-            
-        const country = this.state.playouts.find(el => el.country === shortname);
-        const hslColor = this.getHeatMapColors(country.count);
-        return `hsl(${hslColor.h}, ${hslColor.s}%, ${hslColor.l}%)`
-    }
+    handleSetPreviousCircle = (previousCircle) => {
+        this.setState({previousCircle});
+    }  
 
     handleDeselectClick = (e) => {
-        console.log("iiii",e.target)
-        if (!(e.target.tagName === 'circle')) {
-            console.log("the same", e.target.tagName);
+        if (e.target.tagName !== 'circle' && this.state.previousCircle)           
             this.setState({deselected: true});
-        } 
     }
 
-    handlehasBeenDeselected = () => {
-        this.setState({deselected: false});
+    handleHasBeenDeselected = () => {
+        this.setState({deselected: false, previousCircle: undefined});
     }
+
+    handleResorting = (idx) => {  
+        console.log("handle resorting",this.state.countriesWithKibanaData)
+        const countriesWithKibana = [...this.state.countriesWithKibanaData];
+        const elementToBeOnTop = countriesWithKibana.splice(idx, 1)[0];
+        countriesWithKibana.push(elementToBeOnTop);
+        this.setState({countriesWithKibanaData: countriesWithKibana, resorted: true});
+    }
+    
+    handleHasBeenResorted = () => {
+        this.setState({resorted: false});
+    }
+
 
     render() { 
-        console.log(this.state.countriesWithKibanaData)
+        console.log("kibana", this.state.countriesWithKibanaData)
         return (            
-            <React.Fragment>                
-                <svg width={1200} height={800} viewBox="0 0 1200 800" onClick={(e) => {this.handleDeselectClick(e)}}>
+            <React.Fragment>
+                <svg
+                    width={this.state.mapWidth}
+                    height={this.state.mapHeight}
+                    viewBox={`0 0 ${this.state.mapWidth} ${this.state.mapHeight}`}
+                    onClick={e => {
+                        this.handleDeselectClick(e);
+                    }}
+                    className="svgC"
+                >
                     <g className="countries">
-                        {this.state.worldData.map((d, i) => this.getPathTag(d, i))}
-                    </g>
-                    <g className="markers">
-                        {
-                            this.state.countriesWithKibanaData.map((country, i) => (
-                                <DataCircle 
-                                    key={`dataCircle-${i}`} 
-                                    previousCircle={this.state.previousCircle}
-                                    position={this.getCountryCenter(country)}
-                                    description = {this.getCountryDescription(country.id)}
-                                    data={this.getKibanaDataWithAlphaCode(country.alpha)} 
-                                    idx={i} 
-                                    maxHeatColor={this.state.heatestValue}
-                                    projection={this.projection}
-                                    onSetPreviousCircle={this.handleSetPreviousCircle}
-                                    deselected={this.state.deselected}
-                                    onHasBeenDeselected={this.handlehasBeenDeselected}
-                                    >
-                                </DataCircle>
-                            ))
-                        }
+                        {this.state.worldData.map((d, i) => (
+                            <Country
+                                key={`country-${i}`}
+                                d={d}
+                                idx={i}
+                                projection={this.state.projection}
+                                countryDesc={this.getCountryDescription(d.id)}
+                            />
+                        ))}
                     </g>
 
+                    <g className="markers">
+                        {this.state.countriesWithKibanaData.map(
+                            (country, i) => (
+                                <DataCircle
+                                    key={`dataCircle-${i}`}
+                                    previousCircle={this.state.previousCircle}
+                                    position={this.getCountryCenter(country)}
+                                    description={this.getCountryDescription(country.id)}
+                                    data={this.getKibanaDataWithAlphaCode(country.alpha)}
+                                    radius={this.state.radius}
+                                    strokeWidth={this.state.strokeWidth}
+                                    idx={i}
+                                    lastElementIdx={this.state.countriesWithKibanaData.length - 1}
+                                    maxHeatColor={this.state.heatestValue}
+                                    onSetPreviousCircle={this.handleSetPreviousCircle}
+                                    deselected={this.state.deselected}
+                                    onHasBeenDeselected={this.handleHasBeenDeselected}
+                                    resorted={this.state.resorted}
+                                    onResortElements={this.handleResorting}
+                                    onHasBeenResorted={this.handleHasBeenResorted}
+                                />
+                            )
+                        )}
+                    </g>
                 </svg>
             </React.Fragment>
-        )        
+        );        
     }
 }
  

@@ -20,9 +20,7 @@ code {
   background-color: aqua;
 }
 
-
-
-.marker {
+.circle {
   opacity: 0.5;
   transition: opacity 1.5s;
   transition: transform 0.5s;
@@ -35,13 +33,23 @@ code {
   to {stroke-dashoffset: 150}
 }
 
-.markerTest:hover {
-  opacity: 0.4;
-  stroke-dasharray: 6; 
-  animation: dashdraw 30s linear infinite;
+.svgC {
+  border: 1px solid green;
 }
 
-.svgC {
-  background: green;
-  position: absolute;
+.infoText {
+  fill: blue !important;
+  z-index: 10000;
+}
+
+.invisible {
+  visibility: hidden;
+}
+
+.noneOpacity {
+  opacity: 0;
+}
+
+.infoText {  
+  transition: opacity 1.5s;
 }
