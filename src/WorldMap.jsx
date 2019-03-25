@@ -178,7 +178,7 @@ class WorldMap extends Component {
                     onClick={e => {
                         this.handleDeselectClick(e);
                     }}
-                    className="svgC"
+                    className="showBorder"
                 >
                     <g className="countries">
                         {this.state.worldData.map((d, i) => (
@@ -197,15 +197,18 @@ class WorldMap extends Component {
                             (country, i) => (
                                 <DataCircle
                                     key={`${this.getCountryDescription(country.id).name}`}
-                                    previousCircle={this.state.previousCircle}
+                                    
                                     position={this.getCountryCenter(country)}
                                     description={this.getCountryDescription(country.id)}
                                     data={this.getKibanaDataWithAlphaCode(country.alpha)}
+
                                     radius={this.state.radius}
                                     strokeWidth={this.state.strokeWidth}
+                                    maxHeatColor={this.state.heatestValue}
                                     idx={i}
                                     lastElementIdx={this.state.countriesWithKibanaData.length - 1}
-                                    maxHeatColor={this.state.heatestValue}
+                                    
+                                    previousCircle={this.state.previousCircle}
                                     onSetPreviousCircle={this.handleSetPreviousCircle}
                                     deselected={this.state.deselected}
                                     onHasBeenDeselected={this.handleHasBeenDeselected}

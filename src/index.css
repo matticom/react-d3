@@ -28,16 +28,13 @@ code {
   animation: dashdraw 50s linear infinite;
 }
 
-
 @keyframes dashdraw {
   to {stroke-dashoffset: 150}
 }
 
-.svgC {
+.showBorder {
   border: 1px solid green;
 }
-
-
 
 .invisible {
   visibility: hidden;

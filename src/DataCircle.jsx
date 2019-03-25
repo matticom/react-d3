@@ -4,68 +4,76 @@ class DataCircle extends Component {
 
     constructor(props) {
         super(props);
+        this.rectRef = React.createRef();
+        this.textRef = React.createRef();
+        this.circleRef = React.createRef();
+        this.textSvgRef = React.createRef();
         this.state = { 
-            margin: 11,
-            fontSize: 0
-         }
+            margin: 11
+        }
+
     }       
    
     componentDidUpdate() {
-        if (this.props.deselected) {
-            if (this.props.previousCircle.circle === this.refs.circleRef) {
-                this.restoreSmallCircleSettings();
-                this.props.onHasBeenDeselected();
+        const { deselected, resorted, previousCircle, idx, lastElementIdx, 
+                onHasBeenDeselected, onHasBeenResorted } = this.props;
+
+        if (deselected) {
+            if (previousCircle.circle === this.circleRef.current) {
+                this.restoreMinimizedCircleSettings();
+                onHasBeenDeselected();
             }
         }
         
-        if (this.props.resorted) {           
-            if(this.props.idx === this.props.lastElementIdx){
-                this.refs.circleRef.className.baseVal = "circle";
+        if (resorted) {           
+            if(idx === lastElementIdx){
+                this.circleRef.current.className.baseVal = "circle";
                 setTimeout(() =>
-                    this.refs.circleRef.dispatchEvent(
+                    this.circleRef.current.dispatchEvent(
                         new MouseEvent('click', { view: window, bubbles: true, cancelable: false })
                     ), 1);               
-                this.props.onHasBeenResorted();                
+                onHasBeenResorted();                
             }
         }
         
     }    
 
-    handleCircleClick = (e) => {        
+    handleCircleClick = (e) => {   
+        const { idx, lastElementIdx, previousCircle, 
+                onSetPreviousCircle, onResortElements } = this.props;
+
         // make sure that the clicked circle is not covered by other circles
-        if (this.props.idx !== this.props.lastElementIdx){
-            if (this.props.previousCircle) {
-                this.restoreSmallCircleSettings();            
+        if (idx !== lastElementIdx){
+            if (previousCircle) {
+                this.restoreMinimizedCircleSettings();            
             }
-            this.props.onSetPreviousCircle(undefined);
-            this.props.onResortElements(this.props.idx); 
+            onSetPreviousCircle(undefined);
+            onResortElements(idx); 
             return;
         }            
         
         const circle = e.currentTarget;
 
         // clicked on already maximized circle
-        if (this.props.previousCircle && this.props.previousCircle.circle === circle) return; 
+        if (previousCircle && previousCircle.circle === circle) return; 
         
-        // backup for last maximized circle is available
-        if (this.props.previousCircle) {
-            this.restoreSmallCircleSettings();           
-        }
+        // if backup for currently maximized circle available then restore
+        if (previousCircle) this.restoreMinimizedCircleSettings();
 
         // backup minimized circle settings
-        const currentSmallCircleSettings = this.saveMinimizedCircleSettings(circle, this.props.idx); 
-        this.props.onSetPreviousCircle({ ...currentSmallCircleSettings });
+        const currentMinimizedCircleSettings = this.saveMinimizedCircleSettings(circle, idx); 
+        onSetPreviousCircle({ ...currentMinimizedCircleSettings });
 
-        // set properties for maximized circle
+        // set properties for new maximized circle
         this.setCircleSettings(this.getMaximizedCircleSettings(circle));
         this.showInfo();
-        this.props.onResortElements(this.props.idx);
+        onResortElements(idx);
     }
 
-    restoreSmallCircleSettings() {
-        const oldSmallCircleSetting = this.props.previousCircle;
-        this.setCircleSettings(oldSmallCircleSetting);
-        this.hideInfo(oldSmallCircleSetting);  
+    restoreMinimizedCircleSettings() {
+        const oldMinimizedCircleSetting = this.props.previousCircle;
+        this.setCircleSettings(oldMinimizedCircleSetting);
+        this.hideInfo(oldMinimizedCircleSetting);  
     }
 
     setCircleSettings(circleProps) {        
@@ -96,29 +104,31 @@ class DataCircle extends Component {
     }   
 
     saveMinimizedCircleSettings(circle, idx) {
+        const { radius } = this.props;
         return {
             idx,
             circle,
-            infoText: this.refs.svgRef,
+            infoText: this.textSvgRef.current,
             svgParent: circle.parentElement,
             properties: {                
                 svgX: circle.parentElement.x.baseVal.value,
                 svgY: circle.parentElement.y.baseVal.value,
-                svgSideLength: this.props.radius * 2,
-                viewBox: `${-this.props.radius} ${-this.props.radius} ${this.props.radius * 2} ${this.props.radius * 2}`,
+                svgSideLength: radius * 2,
+                viewBox: `${-radius} ${-radius} ${radius * 2} ${radius * 2}`,
                 strokeDashArray: 0,
                 opacity: 0.5,
                 stroke: '#FFFFFF',
                 transform: 'scale(1)',
-                siblingCircleRadius: this.props.radius,
+                siblingCircleRadius: radius,
                 mode: 'min'
             }
         }
     }
 
     getMaximizedCircleSettings(circle) {
-        const radiusWithStroke = this.props.radius + this.props.strokeWidth;
-        const newDoubleRadiusWithStroke = this.props.radius * 2 + this.props.strokeWidth;
+        const { radius, strokeWidth } = this.props;
+        const radiusWithStroke = radius + strokeWidth;
+        const newDoubleRadiusWithStroke = radius * 2 + strokeWidth;
         return {
             circle,
             svgParent: circle.parentElement,
@@ -138,15 +148,15 @@ class DataCircle extends Component {
     }
 
     showInfo() {
-        const txtBB = this.refs.textRef.getBBox();
+        const txtBB = this.textRef.current.getBBox();
         const width = txtBB.width;
         const height = txtBB.height;
 
-        this.refs.rectRef.width.baseVal.value = width + this.state.margin * 2;
-        this.refs.rectRef.height.baseVal.value = height + this.state.margin * 2;
+        this.rectRef.current.width.baseVal.value = width + this.state.margin * 2;
+        this.rectRef.current.height.baseVal.value = height + this.state.margin * 2;
 
-        this.refs.svgRef.x.baseVal.value = this.props.position.x - this.refs.rectRef.width.baseVal.value /2;
-        this.refs.svgRef.className.baseVal = "infoText";
+        this.textSvgRef.current.x.baseVal.value = this.props.position.x - this.rectRef.current.width.baseVal.value /2;
+        this.textSvgRef.current.className.baseVal = "infoText";
     }
 
     hideInfo(circleProps) {        
@@ -166,9 +176,9 @@ class DataCircle extends Component {
         const sideLength = radiusWithStroke * 2;
         const maxRadiusWithStroke = radius * 2 + strokeWidth + 5;
         
-        console.log("props", this.props);
-        console.log("props", this.props);
-        console.log("desc", description);
+        // console.log("props", this.props);
+        // console.log("props", this.props);
+        // console.log("desc", description);
         return (
             <React.Fragment>
                 <svg
@@ -176,8 +186,7 @@ class DataCircle extends Component {
                     y={position.y - radiusWithStroke}
                     height={sideLength}
                     width={sideLength}
-                    viewBox={`${-radiusWithStroke} ${-radiusWithStroke} ${sideLength} ${sideLength}`}
-                    className="svgC"                
+                    viewBox={`${-radiusWithStroke} ${-radiusWithStroke} ${sideLength} ${sideLength}`}              
                 >
                     <circle
                         key={`spacer-${idx}`}
@@ -197,7 +206,7 @@ class DataCircle extends Component {
                         paintOrder="stroke"
                         className="circle"
                         onClick={(event) => this.handleCircleClick(event, idx)}
-                        ref="circleRef"
+                        ref={this.circleRef}
                     />                
                     
                 </svg>
@@ -208,7 +217,7 @@ class DataCircle extends Component {
                     width={400}
                     viewBox={'0 0 400 100'}
                     className="noneOpacity"
-                    ref="svgRef"
+                    ref={this.textSvgRef}
                 >
                     <rect
                         x="0" 
@@ -220,13 +229,13 @@ class DataCircle extends Component {
                         fill={"rgba(0,0,0,0.7)"}
                         stroke={"rgba(255,255,255,1)"}
                         strokeWidth="0.9"
-                        ref="rectRef"
+                        ref={this.rectRef}
                     />
                     <g transform={`translate(${this.state.margin} ${this.state.margin})`}>
                     <text 
                         x="0" 
                         y="0"                         
-                        ref="textRef"
+                        ref={this.textRef}
                         className="infoText"
                     >
                         <tspan x="0" dy={`${14}`} fill={"rgba(255,255,255,0.9)"}>
