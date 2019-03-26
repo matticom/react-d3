@@ -164,7 +164,7 @@ class DataCircle extends Component {
     }
 
     getHeatMapColors(input) {        
-        const value = input * 1.0 / this.props.maxHeatColor;
+        const value = input * 1.0 / this.props.maxHeatValue;
         const h = (1 - value) * 60;      
         const hslColor = { h: Math.round(h * 100) / 100, s: 100, l: 35 }
         return `hsl(${hslColor.h}, ${hslColor.s}%, ${hslColor.l}%)`
@@ -232,20 +232,20 @@ class DataCircle extends Component {
                         ref={this.rectRef}
                     />
                     <g transform={`translate(${this.state.margin} ${this.state.margin})`}>
-                    <text 
-                        x="0" 
-                        y="0"                         
-                        ref={this.textRef}
-                        className="infoText"
-                    >
-                        <tspan x="0" dy={`${14}`} fill={"rgba(255,255,255,0.9)"}>
-                            {description.name}
-                        </tspan>
-                        
-                        <tspan x="0" dy={`${24}`} fill={"rgba(235,235,235,1)"}>
-                            Playouts: {data.count}
-                        </tspan>
-                    </text>  
+                        <text 
+                            x="0" 
+                            y="0"                         
+                            ref={this.textRef}
+                            className="infoText"
+                        >
+                            <tspan x="0" dy={`${14}`} fill={"rgba(255,255,255,0.9)"}>
+                                {description.name}
+                            </tspan>
+                            
+                            <tspan x="0" dy={`${24}`} fill={"rgba(235,235,235,1)"}>
+                                Playouts: {data.count}
+                            </tspan>
+                        </text>  
                     </g>               
                 </svg>
             </React.Fragment>

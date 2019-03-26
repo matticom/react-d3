@@ -32,6 +32,7 @@ code {
   to {stroke-dashoffset: 150}
 }
 
+
 .showBorder {
   border: 1px solid green;
 }
@@ -44,6 +45,20 @@ code {
   opacity: 0;
 }
 
+.halfOpacity {
+  opacity: 0;
+}
+
 .infoText {  
   transition: opacity 1.5s;
+}
+
+.legendHead {
+  font: 15px sans-serif; fill: rgba(155,155,155,1);
+  text-anchor: middle
+}
+
+.legendContent {
+  font: 14px sans-serif; fill: rgba(55,55,55,1);
+  text-anchor: middle
 }

@@ -4,6 +4,7 @@ import ResponseParser from "./ResponseParser"
 import * as topojson from "topojson-client";
 import DataCircle from './DataCircle';
 import Country from './Country';
+import Legend from './Legend';
 
 // https://github.com/lukes/ISO-3166-Countries-with-Regional-Codes/blob/master/slim-2/slim-2.json
 
@@ -52,7 +53,7 @@ class WorldMap extends Component {
             { name: "Lima", coordinates: [-77.0428,-12.0464], population: 10750000 },
           ];
         
-        this.state.mapWidth = 1200;
+        this.state.mapWidth = 500;
         this.state.mapHeight = this.state.mapWidth * 0.665;
         this.state.radius = 3 + this.state.mapWidth / 300;
         this.state.strokeWidth = 0.5 + this.state.mapWidth / 1200;
@@ -69,6 +70,9 @@ class WorldMap extends Component {
         this.state.deselected = false;
         this.state.resorted = false;
         this.state.projection = this.projection();
+ 
+        this.state.legendHeight = 140;
+        this.state.legendWidth = 85;
         console.log("heatest value", this.state.heatestValue);
     }
     
@@ -180,7 +184,7 @@ class WorldMap extends Component {
                     }}
                     className="showBorder"
                 >
-                    <g className="countries">
+                    <g>
                         {this.state.worldData.map((d, i) => (
                             <Country
                                 key={`country-${i}`}
@@ -192,7 +196,7 @@ class WorldMap extends Component {
                         ))}
                     </g>
 
-                    <g className="markers">
+                    <g>
                         {this.state.countriesWithKibanaData.map(
                             (country, i) => (
                                 <DataCircle
@@ -204,7 +208,7 @@ class WorldMap extends Component {
 
                                     radius={this.state.radius}
                                     strokeWidth={this.state.strokeWidth}
-                                    maxHeatColor={this.state.heatestValue}
+                                    maxHeatValue={this.state.heatestValue}
                                     idx={i}
                                     lastElementIdx={this.state.countriesWithKibanaData.length - 1}
                                     
@@ -219,6 +223,12 @@ class WorldMap extends Component {
                             )
                         )}
                     </g>
+                    <Legend
+                        position={{x: 10, y: this.state.mapHeight - (10 + this.state.legendHeight)}}
+                        height={this.state.legendHeight}
+                        width={this.state.legendWidth}
+                        maxHeatValue={this.state.heatestValue}
+                    />
                 </svg>
             </React.Fragment>
         );        
