@@ -77,14 +77,14 @@ class Legend extends Component {
                             className=""
                         >
                             
-                            <tspan x={`${width * 0.5}`} y={`${height * 0.05 + textYOffset}`} className="legendHead">
+                            <tspan x={`${width * 0.5}`} y={`${height * 0.05 + textYOffset}`} className="wm-legendHead">
                                 Playouts /
                             </tspan>
-                            <tspan x={`${width * 0.5}`} y={`${height * 0.15 + textYOffset}`} className="legendHead">
+                            <tspan x={`${width * 0.5}`} y={`${height * 0.15 + textYOffset}`} className="wm-legendHead">
                                 Ingests
                             </tspan>
                             {this.createValueScale().map((value, idx) => 
-                                <tspan x={`${width * 0.5}`} y={`${contentStartYOffset + lineOffset * (idx+ 1) + textYOffset}`} className="legendContent">
+                                <tspan x={`${width * 0.5}`} y={`${contentStartYOffset + lineOffset * (idx+ 1) + textYOffset}`} className="wm-legendContent">
                                 {Math.floor(value)}
                                 </tspan>
                             )}   

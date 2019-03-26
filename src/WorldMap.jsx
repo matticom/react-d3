@@ -53,13 +53,13 @@ class WorldMap extends Component {
             { name: "Lima", coordinates: [-77.0428,-12.0464], population: 10750000 },
           ];
         
-        this.state.mapWidth = 500;
+        this.state.mapWidth = 700;
         this.state.mapHeight = this.state.mapWidth * 0.665;
         this.state.radius = 3 + this.state.mapWidth / 300;
         this.state.strokeWidth = 0.5 + this.state.mapWidth / 1200;
 
         //this.state.testData = require('./data/test_GER.json');
-        this.state.testData = require('./data/test.json');
+        this.state.testData = require('../node_modules/world-atlas/world/110m.json');
         this.state.rawWorldData = require('./data/110m.json');
         this.state.countryCodes = require('./data/slim-2.json');
         this.state.worldData = topojson.feature(this.state.rawWorldData, this.state.rawWorldData.objects.countries).features;

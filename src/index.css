@@ -1,26 +1,7 @@
-body {
-  margin: 0;
-  padding: 0;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
-    "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
-    monospace;
-}
 
-.worldWindow {
-  position: relative; 
-  width: 1200px; 
-  height: 800px;
-  background-color: aqua;
-}
 
-.circle {
+.wm-circle {
   opacity: 0.5;
   transition: opacity 1.5s;
   transition: transform 0.5s;
@@ -32,33 +13,24 @@ code {
   to {stroke-dashoffset: 150}
 }
 
-
-.showBorder {
-  border: 1px solid green;
-}
-
-.invisible {
+.wm-invisible {
   visibility: hidden;
 }
 
-.noneOpacity {
+.wm-noneOpacity {
   opacity: 0;
 }
 
-.halfOpacity {
-  opacity: 0;
-}
-
-.infoText {  
+.wm-infoText {  
   transition: opacity 1.5s;
 }
 
-.legendHead {
+.wm-legendHead {
   font: 15px sans-serif; fill: rgba(155,155,155,1);
   text-anchor: middle
 }
 
-.legendContent {
+.wm-legendContent {
   font: 14px sans-serif; fill: rgba(55,55,55,1);
   text-anchor: middle
 }

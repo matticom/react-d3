@@ -27,7 +27,7 @@ class DataCircle extends Component {
         
         if (resorted) {           
             if(idx === lastElementIdx){
-                this.circleRef.current.className.baseVal = "circle";
+                this.circleRef.current.className.baseVal = "wm-circle";
                 setTimeout(() =>
                     this.circleRef.current.dispatchEvent(
                         new MouseEvent('click', { view: window, bubbles: true, cancelable: false })
@@ -156,11 +156,11 @@ class DataCircle extends Component {
         this.rectRef.current.height.baseVal.value = height + this.state.margin * 2;
 
         this.textSvgRef.current.x.baseVal.value = this.props.position.x - this.rectRef.current.width.baseVal.value /2;
-        this.textSvgRef.current.className.baseVal = "infoText";
+        this.textSvgRef.current.className.baseVal = "wm-infoText";
     }
 
     hideInfo(circleProps) {        
-        circleProps.infoText.className.baseVal = "infoText noneOpacity";
+        circleProps.infoText.className.baseVal = "wm-infoText wm-noneOpacity";
     }
 
     getHeatMapColors(input) {        
@@ -193,7 +193,7 @@ class DataCircle extends Component {
                         cx={0}
                         cy={0}
                         r={radiusWithStroke}                    
-                        className="invisible"                    
+                        className="wm-invisible"                    
                     />
                     <circle
                         key={`circle-${idx}`}
@@ -204,7 +204,7 @@ class DataCircle extends Component {
                         stroke="#FFFFFF"
                         strokeWidth={strokeWidth}
                         paintOrder="stroke"
-                        className="circle"
+                        className="wm-circle"
                         onClick={(event) => this.handleCircleClick(event, idx)}
                         ref={this.circleRef}
                     />                
@@ -216,7 +216,7 @@ class DataCircle extends Component {
                     height={100}
                     width={400}
                     viewBox={'0 0 400 100'}
-                    className="noneOpacity"
+                    className="wm-noneOpacity"
                     ref={this.textSvgRef}
                 >
                     <rect
@@ -236,7 +236,7 @@ class DataCircle extends Component {
                             x="0" 
                             y="0"                         
                             ref={this.textRef}
-                            className="infoText"
+                            className="wm-infoText"
                         >
                             <tspan x="0" dy={`${14}`} fill={"rgba(255,255,255,0.9)"}>
                                 {description.name}
