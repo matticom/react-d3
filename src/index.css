@@ -36,8 +36,8 @@
 }
 
 .testParent {
-  height: calc(100vw * 0.637);
-  width: calc(100vw - 50px);
+  height: calc(97vw * 0.663);
+  width: calc(97vw);
   display: block;
   border: 1px solid red;
   position: relative;

@@ -96,8 +96,8 @@ class WorldMap extends Component {
 
     projection = (width) => {
         return d3.geoMercator()
-        .translate([width / 2, (width * 0.665) / 1.42])
-        .scale(width / 6.3);
+        .translate([width / 2, (width * 0.665) / 1.44])
+        .scale(width / 6.37);
     }
    
     getCountryCenter(d) {  
