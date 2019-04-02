@@ -5,6 +5,7 @@
   "dependencies": {
     "d3": "^5.9.1",
     "react": "^16.8.4",
+    "react-container-dimensions": "^1.4.1",
     "react-dom": "^16.8.4",
     "react-scripts": "2.1.8",
     "topojson-client": "^3.0.0",

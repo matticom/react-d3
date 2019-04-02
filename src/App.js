@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import './App.css';
 
 import WorldMap from './WorldMap';
+import TestParent from './TestParent';
 
 class App extends Component {
 
@@ -15,7 +16,7 @@ class App extends Component {
   render() {
     return (
       <div className="App">
-        <WorldMap></WorldMap>
+        <TestParent />
         
       </div>
     );

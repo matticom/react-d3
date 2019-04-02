@@ -34,3 +34,19 @@
   font: 14px sans-serif; fill: rgba(55,55,55,1);
   text-anchor: middle
 }
+
+.testParent {
+  height: calc(100vw * 0.637);
+  width: calc(100vw - 50px);
+  display: block;
+  border: 1px solid red;
+  position: relative;
+}
+
+.showBorder {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: calc(100% - 3px);
+}

@@ -1,11 +1,11 @@
 import React, { Component } from 'react';
 import * as d3 from "d3";
 
-class Country extends Component {
+class Country extends Component {   
 
-    getPath (d) {
+    getPath (d, width) {
         const path = d3.geoPath();
-        path.projection(this.props.projection);      
+        path.projection(this.props.projection(width));      
         return path(d);        
     }
 
@@ -14,7 +14,7 @@ class Country extends Component {
         return (
             <path
                 key={`path-${idx}`}
-                d={this.getPath(d)}
+                d={this.getPath(d, this.props.width)}
                 className={`country ${countryDesc['alpha-2']}`}
                 fill={'rgba(38,50,56,0.3)'}
                 stroke="#FFFFFF"

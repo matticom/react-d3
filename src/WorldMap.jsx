@@ -16,8 +16,8 @@ class WorldMap extends Component {
         height: 8
     }
 
-    constructor() {
-        super();
+    constructor(props) {
+        super(props);
         // http://techslides.com/list-of-countries-and-capitals
         // this.state.cities = require('./data/country-capitals.json');
         this.state.cities = [
@@ -53,13 +53,14 @@ class WorldMap extends Component {
             { name: "Lima", coordinates: [-77.0428,-12.0464], population: 10750000 },
           ];
         
-        this.state.mapWidth = 700;
+          console.log("width", this.props.width)
+        this.state.mapWidth = this.props.width;
         this.state.mapHeight = this.state.mapWidth * 0.665;
         this.state.radius = 3 + this.state.mapWidth / 300;
         this.state.strokeWidth = 0.5 + this.state.mapWidth / 1200;
 
         //this.state.testData = require('./data/test_GER.json');
-        this.state.testData = require('../node_modules/world-atlas/world/110m.json');
+        this.state.testData = require('./data/test.json');
         this.state.rawWorldData = require('./data/110m.json');
         this.state.countryCodes = require('./data/slim-2.json');
         this.state.worldData = topojson.feature(this.state.rawWorldData, this.state.rawWorldData.objects.countries).features;
@@ -69,29 +70,39 @@ class WorldMap extends Component {
         this.state.countriesWithKibanaData = this.filterCountriesWithKibanaData(this.state.playouts);
         this.state.deselected = false;
         this.state.resorted = false;
-        this.state.projection = this.projection();
  
         this.state.legendHeight = 140;
         this.state.legendWidth = 85;
         console.log("heatest value", this.state.heatestValue);
     }
+
+    // componentDidMount() {
+    //     this.setState({
+    //         mapWidth: this.props.parentWidth,
+    //         mapHeight: this.props.parentWidth * 0.665,
+    //         radius: 3 + this.props.parentWidth / 300,
+    //         strokeWidth: 0.5 + this.props.parentWidth / 1200
+    //     })
+    // }
     
     componentDidUpdate(prevProps, prevState) {
-        // this.state.worldData.forEach((d, i) => {
-        //     console.log("d:", d);
-        //     console.log("i:", i);                            
-        // });
+        // if (Math.abs(prevProps.width - this.props.width) > 100 ) {
+        //     this.setState({
+        //         mapWidth: this.props.width
+        //     })
+        // }
+            
     }
 
-    projection() {
+    projection = (width) => {
         return d3.geoMercator()
-        .translate([this.state.mapWidth / 2, this.state.mapHeight / 1.42])
-        .scale(this.state.mapWidth / 6.3);
+        .translate([width / 2, (width * 0.665) / 1.42])
+        .scale(width / 6.3);
     }
    
     getCountryCenter(d) {  
         const path = d3.geoPath();
-        path.projection(this.projection());   
+        path.projection(this.projection(this.props.width));   
         const bounds = path.bounds(d);
         return {          
             x: (bounds[0][0] + bounds[1][0]) / 2,
@@ -170,15 +181,18 @@ class WorldMap extends Component {
         this.setState({resorted: false});
     }
 
-
     render() { 
-        console.log("kibana", this.state.countriesWithKibanaData)
-        return (            
+        const mapWidth = this.props.width;
+        const mapHeight = this.props.width * 0.665;
+        const radius = 3 + this.props.width / 300;
+        const strokeWidth = 0.5 + this.props.width / 1200;
+        
+        //console.log("kibana", this.state.countriesWithKibanaData)
+        return (   
+             
             <React.Fragment>
                 <svg
-                    width={this.state.mapWidth}
-                    height={this.state.mapHeight}
-                    viewBox={`0 0 ${this.state.mapWidth} ${this.state.mapHeight}`}
+                   
                     onClick={e => {
                         this.handleDeselectClick(e);
                     }}
@@ -189,9 +203,10 @@ class WorldMap extends Component {
                             <Country
                                 key={`country-${i}`}
                                 d={d}
+                                width={mapWidth}
                                 idx={i}
-                                projection={this.state.projection}
-                                countryDesc={this.getCountryDescription(d.id)}
+                                projection={this.projection}
+                                countryDesc={this.getCountryDescription(d.id)}                            
                             />
                         ))}
                     </g>
@@ -206,8 +221,8 @@ class WorldMap extends Component {
                                     description={this.getCountryDescription(country.id)}
                                     data={this.getKibanaDataWithAlphaCode(country.alpha)}
 
-                                    radius={this.state.radius}
-                                    strokeWidth={this.state.strokeWidth}
+                                    radius={radius}
+                                    strokeWidth={strokeWidth}
                                     maxHeatValue={this.state.heatestValue}
                                     idx={i}
                                     lastElementIdx={this.state.countriesWithKibanaData.length - 1}
@@ -224,13 +239,14 @@ class WorldMap extends Component {
                         )}
                     </g>
                     <Legend
-                        position={{x: 10, y: this.state.mapHeight - (10 + this.state.legendHeight)}}
+                        position={{x: 10, y: mapHeight - (10 + this.state.legendHeight)}}
                         height={this.state.legendHeight}
                         width={this.state.legendWidth}
                         maxHeatValue={this.state.heatestValue}
                     />
                 </svg>
             </React.Fragment>
+         
         );        
     }
 }
